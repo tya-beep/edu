@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Organization;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrganizationController extends Controller
 {
@@ -12,7 +13,7 @@ class OrganizationController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Organization::query();
+        $query = DB::table('organizations');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -25,7 +26,7 @@ class OrganizationController extends Controller
         }
 
         $organizations = $query->orderBy('OrganizationName')->paginate(10);
-        $totalOrganizations = Organization::count();
+        $totalOrganizations = DB::table('organizations')->count();
 
         return view('organizations.index', compact('organizations', 'totalOrganizations'));
     }
@@ -43,18 +44,35 @@ class OrganizationController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'OrganizationID' => 'required|string|max:20|unique:organizations,OrganizationID',
-            'OrganizationName' => 'required|string|max:255',
-            'OrganizationAddress' => 'nullable|string',
-            'RegisterDate' => 'nullable|date',
-            'PhoneNumber' => 'nullable|string|max:20'
-        ]);
+        try {
+            $validated = $request->validate([
+                'OrganizationID' => 'required|string|max:20|unique:organizations,OrganizationID',
+                'OrganizationName' => 'required|string|max:255',
+                'OrganizationAddress' => 'nullable|string',
+                'RegisterDate' => 'nullable|date',
+                'PhoneNumber' => 'nullable|string|max:20'
+            ]);
 
-        Organization::create($validated);
+            // Insert directly using DB facade
+            DB::table('organizations')->insert([
+                'OrganizationID' => $request->OrganizationID,
+                'OrganizationName' => $request->OrganizationName,
+                'OrganizationAddress' => $request->OrganizationAddress,
+                'RegisterDate' => $request->RegisterDate,
+                'PhoneNumber' => $request->PhoneNumber,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
 
-        return redirect()->route('orgs.index')
-            ->with('success', 'Organization created successfully!');
+            return redirect()->route('orgs.index')
+                ->with('success', 'Organization created successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Error creating organization: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to create organization: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**
@@ -62,8 +80,16 @@ class OrganizationController extends Controller
      */
     public function show($id)
     {
-        $organization = Organization::with('schools')->findOrFail($id);
-        return view('organizations.show', compact('organization'));
+        $organization = DB::table('organizations')->where('OrganizationID', $id)->first();
+        
+        if (!$organization) {
+            abort(404, 'Organization not found');
+        }
+        
+        // Get schools for this organization
+        $schools = DB::table('school')->where('OrganizationID', $id)->get();
+        
+        return view('organizations.show', compact('organization', 'schools'));
     }
 
     /**
@@ -71,7 +97,12 @@ class OrganizationController extends Controller
      */
     public function edit($id)
     {
-        $organization = Organization::findOrFail($id);
+        $organization = DB::table('organizations')->where('OrganizationID', $id)->first();
+        
+        if (!$organization) {
+            abort(404, 'Organization not found');
+        }
+        
         return view('organizations.edit', compact('organization'));
     }
 
@@ -80,19 +111,33 @@ class OrganizationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $organization = Organization::findOrFail($id);
+        try {
+            $validated = $request->validate([
+                'OrganizationName' => 'required|string|max:255',
+                'OrganizationAddress' => 'nullable|string',
+                'RegisterDate' => 'nullable|date',
+                'PhoneNumber' => 'nullable|string|max:20'
+            ]);
 
-        $validated = $request->validate([
-            'OrganizationName' => 'required|string|max:255',
-            'OrganizationAddress' => 'nullable|string',
-            'RegisterDate' => 'nullable|date',
-            'PhoneNumber' => 'nullable|string|max:20'
-        ]);
+            DB::table('organizations')
+                ->where('OrganizationID', $id)
+                ->update([
+                    'OrganizationName' => $request->OrganizationName,
+                    'OrganizationAddress' => $request->OrganizationAddress,
+                    'RegisterDate' => $request->RegisterDate,
+                    'PhoneNumber' => $request->PhoneNumber,
+                    'updated_at' => now()
+                ]);
 
-        $organization->update($validated);
+            return redirect()->route('orgs.index')
+                ->with('success', 'Organization updated successfully!');
 
-        return redirect()->route('orgs.index')
-            ->with('success', 'Organization updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error updating organization: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to update organization: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     /**
@@ -100,18 +145,25 @@ class OrganizationController extends Controller
      */
     public function destroy($id)
     {
-        $organization = Organization::findOrFail($id);
-        
-        // Check if organization has schools
-        if ($organization->schools()->count() > 0) {
+        try {
+            // Check if organization has schools
+            $schoolCount = DB::table('school')->where('OrganizationID', $id)->count();
+            
+            if ($schoolCount > 0) {
+                return redirect()->route('orgs.index')
+                    ->with('error', 'Cannot delete organization because it has schools assigned to it.');
+            }
+
+            DB::table('organizations')->where('OrganizationID', $id)->delete();
+
             return redirect()->route('orgs.index')
-                ->with('error', 'Cannot delete organization because it has schools assigned to it.');
+                ->with('success', 'Organization deleted successfully!');
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting organization: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Failed to delete organization: ' . $e->getMessage());
         }
-
-        $organization->delete();
-
-        return redirect()->route('orgs.index')
-            ->with('success', 'Organization deleted successfully!');
     }
 
     /**
@@ -119,42 +171,91 @@ class OrganizationController extends Controller
      */
     public function import(Request $request)
     {
-        $request->validate([
-            'csvfile' => 'required|file|mimes:csv,txt|max:2048'
-        ]);
+        try {
+            $request->validate([
+                'csvfile' => 'required|file|mimes:csv,txt|max:2048'
+            ]);
 
-        $file = $request->file('csvfile');
-        $handle = fopen($file->getPathname(), 'r');
-        
-        // Skip header row
-        fgetcsv($handle);
-        
-        $imported = 0;
-        $errors = [];
+            $file = $request->file('csvfile');
+            $handle = fopen($file->getPathname(), 'r');
+            
+            // Skip header row
+            fgetcsv($handle);
+            
+            $imported = 0;
+            $errors = [];
+            $rowNumber = 1;
 
-        while (($row = fgetcsv($handle, 1000, ',')) !== false) {
-            try {
-                Organization::create([
-                    'OrganizationID' => $row[0] ?? null,
-                    'OrganizationName' => $row[1] ?? null,
-                    'OrganizationAddress' => $row[2] ?? null,
-                    'RegisterDate' => $row[3] ?? null,
-                    'PhoneNumber' => $row[4] ?? null
-                ]);
-                $imported++;
-            } catch (\Exception $e) {
-                $errors[] = "Row " . ($imported + 1) . ": " . $e->getMessage();
+            while (($row = fgetcsv($handle, 1000, ',')) !== false) {
+                $rowNumber++;
+                
+                try {
+                    // Trim and clean data
+                    $data = array_map('trim', $row);
+                    
+                    // Check if required fields exist
+                    if (empty($data[0]) || empty($data[1])) {
+                        $errors[] = "Row {$rowNumber}: Missing required fields (OrganizationID or OrganizationName)";
+                        continue;
+                    }
+
+                    // Check if OrganizationID already exists
+                    $exists = DB::table('organizations')->where('OrganizationID', $data[0])->exists();
+                    if ($exists) {
+                        $errors[] = "Row {$rowNumber}: OrganizationID '{$data[0]}' already exists";
+                        continue;
+                    }
+
+                    // Insert directly using DB facade
+                    DB::table('organizations')->insert([
+                        'OrganizationID' => $data[0],
+                        'OrganizationName' => $data[1],
+                        'OrganizationAddress' => $data[2] ?? null,
+                        'RegisterDate' => !empty($data[3]) ? date('Y-m-d', strtotime($data[3])) : null,
+                        'PhoneNumber' => $data[4] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    
+                    $imported++;
+                    
+                } catch (\Exception $e) {
+                    $errors[] = "Row {$rowNumber}: " . $e->getMessage();
+                    Log::error('CSV import row error: ' . $e->getMessage(), ['row' => $row]);
+                }
             }
-        }
 
-        fclose($handle);
+            fclose($handle);
 
-        if ($imported > 0) {
+            // Log the import results
+            Log::info('CSV import completed', ['imported' => $imported, 'errors' => $errors]);
+
+            if ($imported > 0) {
+                $message = "Successfully imported {$imported} organizations!";
+                if (!empty($errors)) {
+                    $message .= " (" . count($errors) . " errors encountered)";
+                }
+                return redirect()->route('orgs.index')
+                    ->with('success', $message)
+                    ->with('import_errors', $errors);
+            } else {
+                $errorMessage = "No organizations were imported. ";
+                if (!empty($errors)) {
+                    $errorMessage .= "Errors: " . implode('; ', array_slice($errors, 0, 3));
+                    if (count($errors) > 3) {
+                        $errorMessage .= " ... and " . (count($errors) - 3) . " more";
+                    }
+                } else {
+                    $errorMessage .= "Please check your file format.";
+                }
+                return redirect()->route('orgs.index')
+                    ->with('error', $errorMessage);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('CSV import error: ' . $e->getMessage());
             return redirect()->route('orgs.index')
-                ->with('success', "Successfully imported {$imported} organizations!");
-        } else {
-            return redirect()->route('orgs.index')
-                ->with('error', "No organizations were imported. Please check your file format.");
+                ->with('error', 'Import failed: ' . $e->getMessage());
         }
     }
 
@@ -215,6 +316,4 @@ class OrganizationController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-
-    
 }

@@ -204,96 +204,109 @@
                 </a>
                 
                 <nav class="ui-header__nav">
+                    @php
+                        $role = session('role', 'guest');
+                    @endphp
 
-                    <a href="{{ route('hr.home') }}" {{ request()->routeIs('hr.home') ? 'aria-current="page"' : '' }}>
-        <i class="fas fa-home"></i> Home
-    </a>
-                    {{-- Dashboard --}}
-                    <a href="{{ route('hr.dashboard') }}" {{ request()->routeIs('hr.dashboard') ? 'aria-current="page"' : '' }}>
-                        <i class="fas fa-chart-pie"></i> Dashboard
-                    </a>
-
-                    {{-- Schools Dropdown --}}
-                    <div style="position:relative;height:58px;display:flex;align-items:center;">
-                        <a href="#" style="cursor:default;display:flex;align-items:center;gap:4px;padding:0 clamp(11px,.95vw,16px);height:58px;color:#64748b;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;" onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('show')">
-                            <i class="fas fa-school"></i> Schools <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+                    {{-- ============================================================ --}}
+                    {{-- HR NAVIGATION --}}
+                    {{-- ============================================================ --}}
+                    @if($role == 'hr' || $role == 'HR')
+                        <a href="{{ route('hr.dashboard') }}" {{ request()->routeIs('hr.dashboard') ? 'aria-current="page"' : '' }}>
+                            <i class="fas fa-chart-pie"></i> Dashboard
                         </a>
-                        <div style="display:none;position:absolute;top:58px;left:0;background:var(--app-surface);border:1px solid var(--app-border);border-radius:var(--app-radius-card);box-shadow:var(--app-shadow-card);min-width:220px;z-index:1000;padding:4px 0;" class="dropdown-menu">
-                            <a href="{{ route('school.list') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-list" style="color:var(--app-primary);"></i> School List
-                            </a>
-                          <a href="{{ route('orgs.index') }}" {{ request()->routeIs('orgs.*') ? 'aria-current="page"' : '' }}>
-    <i class="fas fa-sitemap"></i> Organizations
-</a>
-                        </div>
-                    </div>
 
-                    {{-- Personnel Dropdown (Teachers, Staff, Principals) --}}
-                    <div style="position:relative;height:58px;display:flex;align-items:center;">
-                        <a href="#" style="cursor:default;display:flex;align-items:center;gap:4px;padding:0 clamp(11px,.95vw,16px);height:58px;color:#64748b;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;" onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('show')">
-                            <i class="fas fa-users"></i> Personnel <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+                        {{-- Schools Dropdown --}}
+                        <div style="position:relative;height:58px;display:flex;align-items:center;">
+                            <a href="#" style="cursor:default;display:flex;align-items:center;gap:4px;padding:0 clamp(11px,.95vw,16px);height:58px;color:#64748b;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;" onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('show')">
+                                <i class="fas fa-school"></i> Schools <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+                            </a>
+                            <div style="display:none;position:absolute;top:58px;left:0;background:var(--app-surface);border:1px solid var(--app-border);border-radius:var(--app-radius-card);box-shadow:var(--app-shadow-card);min-width:220px;z-index:1000;padding:4px 0;" class="dropdown-menu">
+                                <a href="{{ route('school.list') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-list" style="color:var(--app-primary);"></i> School List
+                                </a>
+                                <a href="{{ route('school.upload') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-file-import" style="color:var(--app-success);"></i> Import Schools
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Organizations --}}
+                        <a href="{{ route('orgs.index') }}" {{ request()->routeIs('orgs.*') ? 'aria-current="page"' : '' }}>
+                            <i class="fas fa-sitemap"></i> Organizations
                         </a>
-                        <div style="display:none;position:absolute;top:58px;left:0;background:var(--app-surface);border:1px solid var(--app-border);border-radius:var(--app-radius-card);box-shadow:var(--app-shadow-card);min-width:240px;z-index:1000;padding:4px 0;" class="dropdown-menu">
-                            {{-- Teachers Section --}}
-                            <div style="padding:6px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--app-text-subtle);border-bottom:1px solid var(--app-divider);">
-                                <i class="fas fa-chalkboard-user"></i> Teachers
-                            </div>
-                            <a href="{{ route('teachers.index') }}" style="display:flex;align-items:center;gap:8px;padding:6px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-list" style="color:var(--app-primary);width:18px;text-align:center;"></i> Teacher List
-                            </a>
 
-                            {{-- Staff Section --}}
-                            <div style="padding:6px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--app-text-subtle);border-top:1px solid var(--app-divider);border-bottom:1px solid var(--app-divider);margin-top:4px;">
-                                <i class="fas fa-user-cog"></i> Staff
-                            </div>
-                            <a href="{{ route('staff.list') }}" style="display:flex;align-items:center;gap:8px;padding:6px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-list" style="color:var(--app-primary);width:18px;text-align:center;"></i> Staff List
+                        {{-- Personnel Dropdown --}}
+                        <div style="position:relative;height:58px;display:flex;align-items:center;">
+                            <a href="#" style="cursor:default;display:flex;align-items:center;gap:4px;padding:0 clamp(11px,.95vw,16px);height:58px;color:#64748b;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;" onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('show')">
+                                <i class="fas fa-users"></i> Personnel <i class="fas fa-chevron-down" style="font-size:10px;"></i>
                             </a>
+                            <div style="display:none;position:absolute;top:58px;left:0;background:var(--app-surface);border:1px solid var(--app-border);border-radius:var(--app-radius-card);box-shadow:var(--app-shadow-card);min-width:240px;z-index:1000;padding:4px 0;" class="dropdown-menu">
+                                <div style="padding:6px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--app-text-subtle);border-bottom:1px solid var(--app-divider);">
+                                    <i class="fas fa-chalkboard-user"></i> Teachers
+                                </div>
+                                <a href="{{ route('teachers.index') }}" style="display:flex;align-items:center;gap:8px;padding:6px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-list" style="color:var(--app-primary);width:18px;text-align:center;"></i> Teacher List
+                                </a>
 
-                            {{-- Principals Section --}}
-                            <div style="padding:6px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--app-text-subtle);border-top:1px solid var(--app-divider);border-bottom:1px solid var(--app-divider);margin-top:4px;">
-                                <i class="fas fa-user-tie"></i> Principals
+                                <div style="padding:6px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--app-text-subtle);border-top:1px solid var(--app-divider);border-bottom:1px solid var(--app-divider);margin-top:4px;">
+                                    <i class="fas fa-user-cog"></i> Staff
+                                </div>
+                                <a href="{{ route('staff.list') }}" style="display:flex;align-items:center;gap:8px;padding:6px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-list" style="color:var(--app-primary);width:18px;text-align:center;"></i> Staff List
+                                </a>
+
+                                <div style="padding:6px 16px 4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--app-text-subtle);border-top:1px solid var(--app-divider);border-bottom:1px solid var(--app-divider);margin-top:4px;">
+                                    <i class="fas fa-user-tie"></i> Principals
+                                </div>
+                                <a href="{{ route('principal.index') }}" style="display:flex;align-items:center;gap:8px;padding:6px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-list" style="color:var(--app-primary);width:18px;text-align:center;"></i> Principal List
+                                </a>
                             </div>
-                            <a href="{{ route('principal.index') }}" style="display:flex;align-items:center;gap:8px;padding:6px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-list" style="color:var(--app-primary);width:18px;text-align:center;"></i> Principal List
-                            </a>
                         </div>
-                    </div>
+                    @endif
 
-                    {{-- Placements Dropdown --}}
-                    <div style="position:relative;height:58px;display:flex;align-items:center;">
-                        <a href="#" style="cursor:default;display:flex;align-items:center;gap:4px;padding:0 clamp(11px,.95vw,16px);height:58px;color:#64748b;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;" onclick="event.preventDefault(); this.nextElementSibling.classList.toggle('show')">
-                            <i class="fas fa-user-plus"></i> Placements <i class="fas fa-chevron-down" style="font-size:10px;"></i>
+                    {{-- ============================================================ --}}
+                    {{-- TEACHER NAVIGATION --}}
+                    {{-- ============================================================ --}}
+                    @if($role == 'teacher' || $role == 'TEACHER')
+                        <a href="{{ route('teacher.dashboard') }}" {{ request()->routeIs('teacher.dashboard') ? 'aria-current="page"' : '' }}>
+                            <i class="fas fa-user-circle"></i> My Profile
                         </a>
-                        <div style="display:none;position:absolute;top:58px;left:0;background:var(--app-surface);border:1px solid var(--app-border);border-radius:var(--app-radius-card);box-shadow:var(--app-shadow-card);min-width:220px;z-index:1000;padding:4px 0;" class="dropdown-menu">
-                            <a href="{{ route('offer.index') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-file-signature" style="color:var(--app-primary);"></i> Offer Letters
-                            </a>
-                            <a href="{{ route('confirmation.index') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-check-double" style="color:var(--app-success);"></i> Confirmation Letters
-                            </a>
-                            <a href="{{ route('placement.index') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-user-graduate" style="color:var(--app-warning);"></i> Placements
-                            </a>
-                            <a href="{{ route('placement.records') }}" style="display:flex;align-items:center;gap:8px;padding:8px 16px;color:var(--app-text);text-decoration:none;font-size:13px;font-weight:600;transition:background 0.15s ease;" onmouseover="this.style.background='var(--app-background)'" onmouseout="this.style.background='transparent'">
-                                <i class="fas fa-history" style="color:var(--app-text-subtle);"></i> Placement Records
-                            </a>
-                        </div>
-                    </div>
+                    @endif
+
+                    {{-- ============================================================ --}}
+                    {{-- PRINCIPAL NAVIGATION --}}
+                    {{-- ============================================================ --}}
+                    @if($role == 'principal' || $role == 'PRINCIPAL')
+                        <a href="{{ route('principal.dashboard') }}" {{ request()->routeIs('principal.dashboard') ? 'aria-current="page"' : '' }}>
+                            <i class="fas fa-user-circle"></i> My Profile
+                        </a>
+                    @endif
+
+                    {{-- ============================================================ --}}
+                    {{-- STAFF NAVIGATION --}}
+                    {{-- ============================================================ --}}
+                    @if($role == 'staff' || $role == 'STAFF')
+                        <a href="{{ route('staff.dashboard') }}" {{ request()->routeIs('staff.dashboard') ? 'aria-current="page"' : '' }}>
+                            <i class="fas fa-user-circle"></i> My Profile
+                        </a>
+                    @endif
                 </nav>
 
-                {{-- Right side: HR Admin, Avatar, Logout --}}
+                {{-- Right side: User Info, Avatar, Logout --}}
                 <div class="ui-header__actions">
                     <div class="ui-header__account">
                         @php
-                            $userName = session('userName', 'HR Admin');
+                            $userName = session('userName', 'User');
+                            $role = session('role', 'guest');
                         @endphp
                         <div class="ui-header__name">{{ $userName }}</div>
                     </div>
                     <div class="ui-header__avatar">
                         @php
-                            $userName = session('userName', 'HR Admin');
-                            $initial = !empty($userName) ? strtoupper(substr($userName, 0, 1)) : 'H';
+                            $userName = session('userName', 'User');
+                            $initial = !empty($userName) ? strtoupper(substr($userName, 0, 1)) : 'U';
                         @endphp
                         {{ $initial }}
                     </div>

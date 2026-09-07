@@ -2,16 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Organization extends Model
 {
-    protected $table = 'organizations';
-    protected $primaryKey = 'OrganizationID';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    public $timestamps = true;
+    use HasFactory;
 
+    // Specify the table name (plural)
+    protected $table = 'organizations';
+    
+    // Set the primary key
+    protected $primaryKey = 'OrganizationID';
+    
+    // Disable auto-incrementing since we're using string IDs
+    public $incrementing = false;
+    
+    // Set the key type to string
+    protected $keyType = 'string';
+
+    // Define fillable fields
     protected $fillable = [
         'OrganizationID',
         'OrganizationName',
@@ -20,15 +30,14 @@ class Organization extends Model
         'PhoneNumber'
     ];
 
-    // Relationship to schools
+    // Define date casts
+    protected $casts = [
+        'RegisterDate' => 'date',
+    ];
+
+    // Relationship with schools
     public function schools()
     {
-        return $this->hasMany(School::class, 'organizationID', 'OrganizationID');
-    }
-
-    // Accessor for school count
-    public function getSchoolCountAttribute()
-    {
-        return $this->schools()->count();
+        return $this->hasMany(School::class, 'OrganizationID', 'OrganizationID');
     }
 }

@@ -2,6 +2,9 @@
 @section('title', 'HR Dashboard')
 
 @section('content')
+{{-- Add this debug line at the very beginning --}}
+<!-- DEBUG: Dashboard view is loading -->
+
 <div class="ui-page-shell">
     {{-- Page Heading --}}
     <div class="ui-page-heading">
@@ -15,6 +18,11 @@
             </span>
         </div>
     </div>
+
+    {{-- Debug: Check if variables exist --}}
+    <!-- Debug: totalSchools = {{ isset($totalSchools) ? $totalSchools : 'NOT SET' }} -->
+    <!-- Debug: totalPrincipals = {{ isset($totalPrincipals) ? $totalPrincipals : 'NOT SET' }} -->
+    <!-- Debug: totalTeachers = {{ isset($totalTeachers) ? $totalTeachers : 'NOT SET' }} -->
 
     {{-- Statistics Grid using Edu Cards --}}
     <div class="row g-3 mb-4">
@@ -69,49 +77,7 @@
         </div>
     @endif
 
-    {{-- Resignation Summary Cards --}}
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="ui-card ui-card--stat-admin" style="border-left-color: var(--app-warning);">
-                <div class="ui-card__label">Pending Review</div>
-                <div class="ui-card__value" style="color:var(--app-warning);">
-                    {{ ($teacherResignations['pending'] ?? 0) + ($staffResignations['pending'] ?? 0) + ($principalResignations['pending'] ?? 0) }}
-                </div>
-                <div style="font-size:11px;color:var(--app-text-subtle);margin-top:4px;">
-                    👨‍🏫 {{ $teacherResignations['pending'] ?? 0 }} Teachers | 
-                    👥 {{ $staffResignations['pending'] ?? 0 }} Staff | 
-                    👑 {{ $principalResignations['pending'] ?? 0 }} Principals
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="ui-card ui-card--stat-admin" style="border-left-color: var(--app-success);">
-                <div class="ui-card__label">Approved</div>
-                <div class="ui-card__value" style="color:var(--app-success);">
-                    {{ ($teacherResignations['approved'] ?? 0) + ($staffResignations['approved'] ?? 0) + ($principalResignations['approved'] ?? 0) }}
-                </div>
-                <div style="font-size:11px;color:var(--app-text-subtle);margin-top:4px;">
-                    👨‍🏫 {{ $teacherResignations['approved'] ?? 0 }} | 
-                    👥 {{ $staffResignations['approved'] ?? 0 }} | 
-                    👑 {{ $principalResignations['approved'] ?? 0 }}
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="ui-card ui-card--stat-admin" style="border-left-color: var(--app-danger);">
-                <div class="ui-card__label">Rejected</div>
-                <div class="ui-card__value" style="color:var(--app-danger);">
-                    {{ ($teacherResignations['rejected'] ?? 0) + ($staffResignations['rejected'] ?? 0) + ($principalResignations['rejected'] ?? 0) }}
-                </div>
-                <div style="font-size:11px;color:var(--app-text-subtle);margin-top:4px;">
-                    👨‍🏫 {{ $teacherResignations['rejected'] ?? 0 }} | 
-                    👥 {{ $staffResignations['rejected'] ?? 0 }} | 
-                    👑 {{ $principalResignations['rejected'] ?? 0 }}
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {{-- Two Column Layout --}}
     <div class="row g-4">
         {{-- LEFT COLUMN --}}
         <div class="col-lg-7">
@@ -172,142 +138,41 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Recent Resignations --}}
-            <div class="ui-card ui-card--section mt-4">
-                <div class="ui-card__header">
-                    <h3 style="margin:0;font-size:14px;font-weight:800;color:var(--app-text);">
-                        <i class="fas fa-clock" style="color:var(--app-warning);"></i> Recent Resignation Requests
-                    </h3>
-                    <span class="ui-badge ui-badge--info">Last 5</span>
-                </div>
-                <div class="ui-card__body" style="padding:0;">
-                    @forelse(($recentResignations ?? collect()) as $resignation)
-                        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--app-divider);">
-                            <div>
-                                <div style="font-weight:700;font-size:14px;color:var(--app-text);display:flex;align-items:center;gap:6px;">
-                                    {{ $resignation->name ?? ($resignation->teacherName ?? $resignation->staffName ?? $resignation->principalName ?? 'Unknown') }}
-                                    <span class="ui-badge" style="font-size:10px;padding:2px 8px;border-color:var(--app-border);background:var(--app-surface);">
-                                        {{ ucfirst($resignation->type ?? 'Teacher') }}
-                                    </span>
-                                </div>
-                                <div style="font-size:12px;color:var(--app-text-subtle);">
-                                    <i class="far fa-calendar-alt me-1"></i>
-                                    {{ isset($resignation->request_date) ? \Carbon\Carbon::parse($resignation->request_date)->format('d M Y') : 'N/A' }}
-                                </div>
-                            </div>
-                            <div>
-                                @if(($resignation->status ?? 'pending') == 'pending')
-                                    <span class="ui-badge ui-badge--warning">Pending</span>
-                                @elseif(($resignation->status ?? '') == 'approved')
-                                    <span class="ui-badge ui-badge--success">Approved</span>
-                                @else
-                                    <span class="ui-badge ui-badge--danger">Rejected</span>
-                                @endif
-                            </div>
-                        </div>
-                    @empty
-                        <div class="ui-state ui-state--compact">
-                            <div class="ui-state__title">No Recent Resignations</div>
-                            <div class="ui-state__copy">There are no resignation requests at this time.</div>
-                        </div>
-                    @endforelse
-                </div>
-            </div>
         </div>
 
         {{-- RIGHT COLUMN --}}
         <div class="col-lg-5">
-            {{-- Latest Assignment --}}
+            {{-- Quick Actions --}}
             <div class="ui-card ui-card--section">
                 <div class="ui-card__header">
                     <h3 style="margin:0;font-size:14px;font-weight:800;color:var(--app-text);">
-                        <i class="fas fa-user-plus" style="color:var(--app-primary);"></i> Latest Assignment
+                        <i class="fas fa-bolt" style="color:var(--app-warning);"></i> Quick Actions
                     </h3>
                 </div>
-                <div class="ui-card__body">
-                    @if(isset($latestAssign) && $latestAssign)
-                        <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border-radius:var(--app-radius-card);padding:16px 20px;color:#fff;">
-                            <div style="font-weight:800;font-size:16px;margin-bottom:4px;">
-                                {{ $latestAssign->teacherName ?? $latestAssign->name ?? 'Unknown' }}
-                            </div>
-                            <div style="opacity:0.8;font-size:13px;">
-                                <i class="fas fa-school me-1"></i> {{ $latestAssign->schoolName ?? $latestAssign->school ?? 'N/A' }}
-                            </div>
-                            <div style="margin-top:8px;">
-                                <span style="background:rgba(255,255,255,0.2);padding:2px 12px;border-radius:var(--app-radius-pill);font-size:12px;">
-                                    <i class="fas fa-calendar-alt me-1"></i>
-                                    {{ isset($latestAssign->assignDate) ? \Carbon\Carbon::parse($latestAssign->assignDate)->format('d M Y') : 'N/A' }}
-                                </span>
-                            </div>
+                <div class="ui-card__body" style="padding:16px;">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <a href="{{ route('school.list') }}" class="btn btn-outline-primary w-100" style="padding:12px 8px;font-size:13px;font-weight:700;border-radius:var(--app-radius-card);">
+                                <i class="fas fa-school me-2"></i> Manage Schools
+                            </a>
                         </div>
-                    @else
-                        <div class="ui-state ui-state--compact">
-                            <div class="ui-state__title">No Recent Placements</div>
-                            <div class="ui-state__copy">No teachers have been assigned recently.</div>
+                        <div class="col-6">
+                            <a href="{{ route('teachers.index') }}" class="btn btn-outline-success w-100" style="padding:12px 8px;font-size:13px;font-weight:700;border-radius:var(--app-radius-card);">
+                                <i class="fas fa-chalkboard-user me-2"></i> Teachers
+                            </a>
                         </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Retirement Watch --}}
-            <div class="ui-card ui-card--section mt-4">
-                <div class="ui-card__header">
-                    <h3 style="margin:0;font-size:14px;font-weight:800;color:var(--app-text);">
-                        <i class="fas fa-clock" style="color:var(--app-warning);"></i> Retirement Watch
-                    </h3>
-                    <span class="ui-badge ui-badge--info">Next 6 Months</span>
-                </div>
-                <div class="ui-card__body" style="padding:0;max-height:300px;overflow-y:auto;">
-                    @php
-                        $hasRetiring = isset($retiringSoon) && $retiringSoon->count() > 0;
-                    @endphp
-                    
-                    @if($hasRetiring)
-                        @foreach($retiringSoon as $person)
-                            @php
-                                $daysLeft = \Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($person->pensionDate));
-                                $urgencyColor = $daysLeft <= 30 ? '#dc2626' : ($daysLeft <= 60 ? '#f59e0b' : '#3b82f6');
-                                $urgencyText = $daysLeft <= 30 ? '🔴 Near' : ($daysLeft <= 60 ? '🟠 Soon' : '🔵 Upcoming');
-                            @endphp
-                            <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--app-divider);border-left:3px solid {{ $urgencyColor }};padding-left:15px;">
-                                <div>
-                                    <div style="font-weight:700;font-size:14px;color:var(--app-text);">
-                                        {{ $person->name ?? 'Unknown' }}
-                                        <span class="ui-badge" style="font-size:10px;padding:2px 8px;border-color:var(--app-border);background:var(--app-surface);">
-                                            {{ ucfirst($person->type ?? 'Unknown') }}
-                                        </span>
-                                        <span style="font-size:11px;color:{{ $urgencyColor }};font-weight:700;">{{ $urgencyText }}</span>
-                                    </div>
-                                    <div style="font-size:12px;color:var(--app-text-subtle);">
-                                        <i class="fas fa-id-card me-1"></i> {{ $person->id ?? 'N/A' }}
-                                    </div>
-                                </div>
-                                <div class="text-end">
-                                    <div style="font-size:12px;font-weight:700;color:var(--app-text-secondary);">
-                                        {{ isset($person->pensionDate) ? \Carbon\Carbon::parse($person->pensionDate)->format('d M Y') : 'N/A' }}
-                                    </div>
-                                    <div style="font-size:11px;color:{{ $urgencyColor }};font-weight:700;">
-                                        {{ number_format($daysLeft) }} days left
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    @else
-                        <div class="ui-state ui-state--compact">
-                            <div class="ui-state__title">No Upcoming Retirements</div>
-                            <div class="ui-state__copy">No retirements scheduled in the next 6 months.</div>
+                        <div class="col-6">
+                            <a href="{{ route('staff.list') }}" class="btn btn-outline-info w-100" style="padding:12px 8px;font-size:13px;font-weight:700;border-radius:var(--app-radius-card);">
+                                <i class="fas fa-users me-2"></i> Staff
+                            </a>
                         </div>
-                    @endif
-                </div>
-                @if($hasRetiring)
-                    <div style="padding:10px 18px;border-top:1px solid var(--app-divider);background:var(--app-background);font-size:12px;color:var(--app-text-secondary);">
-                        <strong>Total:</strong> {{ $retiringSoon->count() }} 
-                        (👨‍🏫 {{ $retiringSoon->where('type', 'teacher')->count() }} Teachers | 
-                        👑 {{ $retiringSoon->where('type', 'principal')->count() }} Principals | 
-                        👔 {{ $retiringSoon->where('type', 'staff')->count() }} Staff)
+                        <div class="col-6">
+                            <a href="{{ route('principal.index') }}" class="btn btn-outline-warning w-100" style="padding:12px 8px;font-size:13px;font-weight:700;border-radius:var(--app-radius-card);">
+                                <i class="fas fa-user-tie me-2"></i> Principals
+                            </a>
+                        </div>
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>

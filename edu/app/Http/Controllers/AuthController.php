@@ -182,8 +182,8 @@ public function changePassword(Request $request)
             'teacher' => redirect()->route('teacher.dashboard'),
             'principal' => redirect()->route('principal.dashboard'),
             'staff' => redirect()->route('staff.dashboard'),
-            'hr' => redirect()->route('hr.home'),
-            'hr_administrator' => redirect()->route('hr.home'),
+            'hr' => redirect()->route('hr.dashboard'),
+            'hr_administrator' => redirect()->route('hr.dashboard'),
             default => redirect()->route('login')->with('error', 'Invalid role: ' . $role),
         };
     }
