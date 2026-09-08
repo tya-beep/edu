@@ -60,8 +60,6 @@ class OrganizationController extends Controller
                 'OrganizationAddress' => $request->OrganizationAddress,
                 'RegisterDate' => $request->RegisterDate,
                 'PhoneNumber' => $request->PhoneNumber,
-                'created_at' => now(),
-                'updated_at' => now()
             ]);
 
             return redirect()->route('orgs.index')
@@ -126,7 +124,6 @@ class OrganizationController extends Controller
                     'OrganizationAddress' => $request->OrganizationAddress,
                     'RegisterDate' => $request->RegisterDate,
                     'PhoneNumber' => $request->PhoneNumber,
-                    'updated_at' => now()
                 ]);
 
             return redirect()->route('orgs.index')
@@ -213,8 +210,6 @@ class OrganizationController extends Controller
                         'OrganizationAddress' => $data[2] ?? null,
                         'RegisterDate' => !empty($data[3]) ? date('Y-m-d', strtotime($data[3])) : null,
                         'PhoneNumber' => $data[4] ?? null,
-                        'created_at' => now(),
-                        'updated_at' => now()
                     ]);
                     
                     $imported++;

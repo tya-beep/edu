@@ -21,6 +21,9 @@ class Organization extends Model
     // Set the key type to string
     protected $keyType = 'string';
 
+    // Table has no created_at/updated_at columns
+    public $timestamps = false;
+
     // Define fillable fields
     protected $fillable = [
         'OrganizationID',
