@@ -89,6 +89,7 @@ Route::get('/hr/dashboard', [DashboardController::class, 'index'])->name('hr.das
     Route::get('/principals/{principalID}/edit', [PrincipalController::class, 'edit'])->name('principals.edit');
     Route::put('/principals/{principalID}', [PrincipalController::class, 'update'])->name('principals.update');
     Route::post('/principals/{principalID}/terminate', [PrincipalController::class, 'terminate'])->name('principals.terminate');
+    Route::delete('/principals/{principalID}', [PrincipalController::class, 'destroy'])->name('principals.destroy');
 
     // ================================================================
     // STAFF MANAGEMENT
@@ -103,6 +104,7 @@ Route::get('/hr/dashboard', [DashboardController::class, 'index'])->name('hr.das
     Route::get('/staff/{staffID}/edit', [StaffController::class, 'edit'])->name('staff.edit');
     Route::put('/staff/{staffID}', [StaffController::class, 'update'])->name('staff.update');
     Route::post('/staff/{staffID}/terminate', [StaffController::class, 'terminate'])->name('staff.terminate');
+    Route::delete('/staff/{staffID}', [StaffController::class, 'destroy'])->name('staff.destroy');
 
     // ================================================================
     // TEACHER MANAGEMENT
@@ -117,6 +119,7 @@ Route::get('/hr/dashboard', [DashboardController::class, 'index'])->name('hr.das
     Route::get('/teachers/{teacherID}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
     Route::put('/teachers/{teacherID}', [TeacherController::class, 'update'])->name('teachers.update');
     Route::post('/teachers/{teacherID}/terminate', [TeacherController::class, 'terminate'])->name('teachers.terminate');
+    Route::delete('/teachers/{teacherID}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
 
   
 });

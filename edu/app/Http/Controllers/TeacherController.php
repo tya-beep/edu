@@ -192,6 +192,36 @@ class TeacherController extends Controller
     }
 
     /**
+     * Permanently delete a teacher record.
+     */
+    public function destroy(string $teacherID)
+    {
+        try {
+            $teacher = Teacher::where('teacherID', $teacherID)->firstOrFail();
+            $oldData = $teacher->toArray();
+
+            // Remove related assignment records first to avoid orphaned rows
+            DB::table('assign')->where('teacherID', $teacherID)->delete();
+
+            $teacher->delete();
+
+            TeacherAudit::create([
+                'teacherID'  => $teacherID,
+                'action'     => 'Delete',
+                'oldData'    => json_encode($oldData),
+                'newData'    => null,
+                'actionDate' => now(),
+            ]);
+
+            return back()->with('status', 'Teacher deleted successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting teacher: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete teacher: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Download CSV template for teacher import
      */
     public function template()

@@ -256,6 +256,28 @@ class StaffController extends Controller
     }
 
     /**
+     * DELETE STAFF (permanent)
+     */
+    public function destroy($staffID): RedirectResponse
+    {
+        try {
+            $exists = DB::table('staff')->where('staffID', $staffID)->exists();
+
+            if (!$exists) {
+                return back()->with('error', 'Staff not found.');
+            }
+
+            DB::table('staff')->where('staffID', $staffID)->delete();
+
+            return back()->with('status', 'Staff deleted successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting staff: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete staff: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * DOWNLOAD TEMPLATE CSV
      */
     public function template(): StreamedResponse

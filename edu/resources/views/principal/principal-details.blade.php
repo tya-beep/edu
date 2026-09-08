@@ -300,6 +300,27 @@
                 <a href="{{ route('principals.edit', $principal->principalID) }}" class="ui-button ui-button--primary" style="min-height:44px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;">
                     <i class="fas fa-edit"></i> Edit Profile
                 </a>
+                @if(($principal->status ?? 'Aktif') == 'Aktif')
+                    <form action="{{ route('principals.terminate', $principal->principalID) }}" 
+                          method="POST" 
+                          style="display:inline-block;"
+                          onsubmit="return confirm('Are you sure you want to terminate this principal? This action can be reversed.')">
+                        @csrf
+                        <button type="submit" class="ui-button" style="min-height:44px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;background:var(--app-danger);color:#fff;border:1px solid var(--app-danger);border-radius:var(--app-radius-control);font-weight:700;cursor:pointer;">
+                            <i class="fas fa-user-slash"></i> Terminate Principal
+                        </button>
+                    </form>
+                @endif
+                <form action="{{ route('principals.destroy', $principal->principalID) }}" 
+                      method="POST" 
+                      style="display:inline-block;"
+                      onsubmit="return confirm('Are you sure you want to permanently delete this principal? This cannot be undone.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="ui-button" style="min-height:44px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;background:var(--app-danger);color:#fff;border:1px solid var(--app-danger);border-radius:var(--app-radius-control);font-weight:700;cursor:pointer;">
+                        <i class="fas fa-trash"></i> Delete Principal
+                    </button>
+                </form>
                 <a href="{{ route('principal.index') }}" class="ui-button ui-button--compact" style="min-height:44px;padding:0 24px;display:inline-flex;align-items:center;gap:8px;">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>

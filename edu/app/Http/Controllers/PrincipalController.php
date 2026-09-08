@@ -284,6 +284,23 @@ class PrincipalController extends Controller
         }
     }
 
+    /**
+     * DELETE PRINCIPAL (permanent)
+     */
+    public function destroy(string $principalID): RedirectResponse
+    {
+        try {
+            $principal = Principal::where('principalID', $principalID)->firstOrFail();
+            $principal->delete();
+
+            return back()->with('status', 'Principal deleted successfully.');
+
+        } catch (\Exception $e) {
+            Log::error('Error deleting principal: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete principal: ' . $e->getMessage());
+        }
+    }
+
     public function import(Request $request): RedirectResponse
     {
         $request->validate([

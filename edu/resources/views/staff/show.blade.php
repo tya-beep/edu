@@ -309,6 +309,16 @@
                         </button>
                     </form>
                 @endif
+                <form action="{{ route('staff.destroy', $staff->staffID) }}" 
+                      method="POST" 
+                      style="display:inline-block;"
+                      onsubmit="return confirm('Are you sure you want to permanently delete this staff member? This cannot be undone.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="ui-button" style="min-height:44px;padding:0 28px;display:inline-flex;align-items:center;gap:8px;background:var(--app-danger);color:#fff;border:1px solid var(--app-danger);border-radius:var(--app-radius-control);font-weight:700;cursor:pointer;">
+                        <i class="fas fa-trash"></i> Delete Staff
+                    </button>
+                </form>
                 <a href="{{ route('staff.list') }}" class="ui-button ui-button--compact" style="min-height:44px;padding:0 24px;display:inline-flex;align-items:center;gap:8px;">
                     <i class="fas fa-arrow-left"></i> Back to List
                 </a>
