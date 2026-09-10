@@ -12,12 +12,13 @@
             font-family: 'Inter', sans-serif;
         }
         body {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 50%, #a7f3d0 100%);
+            background: #ffffff;
+            background: linear-gradient(145deg, #f0f7ff 0%, #e6f0fa 100%);
             min-height: 100vh;
             position: relative;
             overflow: hidden;
         }
-        /* Animated background circles */
+        /* Animated background circles — blue tones */
         body::before {
             content: '';
             position: absolute;
@@ -25,8 +26,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle at 30% 50%, rgba(5, 150, 105, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            background: radial-gradient(circle at 30% 50%, rgba(37, 99, 235, 0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 50%);
             animation: float 20s ease-in-out infinite;
             z-index: 0;
         }
@@ -38,26 +39,27 @@
         .card {
             position: relative;
             z-index: 1;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 25px 60px -15px rgba(5, 150, 105, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 25px 60px -15px rgba(37, 99, 235, 0.15);
             transition: all 0.3s ease;
+            border-radius: 24px;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 35px 80px -15px rgba(5, 150, 105, 0.35);
+            transform: translateY(-4px);
+            box-shadow: 0 35px 80px -15px rgba(37, 99, 235, 0.22);
         }
         .icon-wrapper {
             width: 70px;
             height: 70px;
-            background: linear-gradient(135deg, #059669, #10b981);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.25rem;
-            box-shadow: 0 12px 30px -10px rgba(5, 150, 105, 0.4);
+            box-shadow: 0 12px 30px -10px rgba(37, 99, 235, 0.4);
             animation: pulse-icon 3s ease-in-out infinite;
         }
         @keyframes pulse-icon {
@@ -72,27 +74,28 @@
             left: 1rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #9ca3af;
+            color: #94a3b8;
             transition: color 0.3s ease;
             font-size: 1rem;
         }
         .input-group input {
             width: 100%;
             padding: 0.875rem 1rem 0.875rem 3rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 0.95rem;
             transition: all 0.3s ease;
             background: white;
             outline: none;
+            color: #1e293b;
         }
         .input-group input:focus {
-            border-color: #059669;
-            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
         .input-group input:focus + .input-icon,
         .input-group input:focus ~ .input-icon {
-            color: #059669;
+            color: #2563eb;
         }
         .input-group input:focus::placeholder {
             color: transparent;
@@ -103,17 +106,17 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #9ca3af;
+            color: #94a3b8;
             transition: color 0.3s ease;
             background: none;
             border: none;
             font-size: 1rem;
         }
         .password-toggle:hover {
-            color: #059669;
+            color: #2563eb;
         }
         .btn-submit {
-            background: linear-gradient(135deg, #059669, #10b981);
+            background: linear-gradient(135deg, #2563eb, #1e4fbd);
             color: white;
             font-weight: 700;
             padding: 0.875rem 2rem;
@@ -127,18 +130,23 @@
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            box-shadow: 0 8px 25px -8px rgba(5, 150, 105, 0.4);
+            box-shadow: 0 8px 25px -8px rgba(37, 99, 235, 0.4);
         }
-        .btn-submit:hover {
+        .btn-submit:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px -8px rgba(5, 150, 105, 0.5);
+            box-shadow: 0 12px 35px -8px rgba(37, 99, 235, 0.5);
         }
-        .btn-submit:active {
+        .btn-submit:active:not(:disabled) {
             transform: translateY(0);
         }
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
         .error-box {
-            background: #fef2f2;
-            border-left: 4px solid #ef4444;
+            background: #fff1f2;
+            border-left: 4px solid #dc2626;
             padding: 0.875rem 1rem;
             border-radius: 12px;
             margin-bottom: 1.5rem;
@@ -152,7 +160,7 @@
             list-style: none;
         }
         .error-box ul li {
-            color: #991b1b;
+            color: #b91c1c;
             font-size: 0.875rem;
             padding: 0.125rem 0;
         }
@@ -169,16 +177,16 @@
             font-size: 0.7rem;
             padding: 0.25rem 0.75rem;
             border-radius: 50px;
-            background: #f3f4f6;
-            color: #6b7280;
+            background: #f1f5f9;
+            color: #64748b;
             display: flex;
             align-items: center;
             gap: 0.375rem;
             transition: all 0.3s ease;
         }
         .requirement.met {
-            background: #d1fae5;
-            color: #065f46;
+            background: #dbeafe;
+            color: #1e40af;
         }
         .requirement i {
             font-size: 0.6rem;
@@ -194,13 +202,13 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
         }
         /* Password strength bar */
         .strength-bar {
             height: 4px;
             border-radius: 2px;
-            background: #e5e7eb;
+            background: #e2e8f0;
             margin-top: 0.75rem;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -210,6 +218,10 @@
             width: 0%;
             border-radius: 2px;
             transition: width 0.5s ease, background 0.3s ease;
+        }
+        /* Blue accent for labels */
+        .accent-blue {
+            color: #2563eb;
         }
         @media (max-width: 480px) {
             .card {
@@ -257,7 +269,7 @@
             <!-- New Password -->
             <div class="mb-4">
                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                    <i class="fas fa-key mr-1 text-green-600"></i> New Password
+                    <i class="fas fa-key mr-1 accent-blue"></i> New Password
                 </label>
                 <div class="input-group">
                     <i class="fas fa-lock input-icon"></i>
@@ -294,7 +306,7 @@
             <!-- Confirm Password -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-                    <i class="fas fa-check-double mr-1 text-green-600"></i> Confirm Password
+                    <i class="fas fa-check-double mr-1 accent-blue"></i> Confirm Password
                 </label>
                 <div class="input-group">
                     <i class="fas fa-check-circle input-icon"></i>
@@ -325,7 +337,7 @@
 
             <!-- Footer -->
             <div class="text-center mt-4">
-                <a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-green-600 transition-colors duration-200">
+                <a href="{{ route('login') }}" class="text-sm text-gray-400 hover:text-blue-600 transition-colors duration-200">
                     <i class="fas fa-arrow-left mr-1"></i> Back to Login
                 </a>
             </div>
@@ -379,7 +391,7 @@
             } else if (strength <= 75) {
                 fill.style.background = '#3b82f6';
             } else {
-                fill.style.background = '#10b981';
+                fill.style.background = '#2563eb';
             }
             
             // Check confirm password match
