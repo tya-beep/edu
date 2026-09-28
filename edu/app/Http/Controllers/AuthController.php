@@ -12,79 +12,17 @@ use App\Models\HrAdministrator;
 
 class AuthController extends Controller
 {
+    /**
+     * The old local login is retired. Anyone who lands on /login is sent to Al Amin Login.
+     */
     public function showLogin()
     {
-        return view('auth.login');
-    }
+        $portal = (string) config('gateway.portal_url');
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required',
-            'password' => 'required'
-        ]);
+        // Guard against a redirect loop if the .env values are missing.
+        abort_if($portal === '', 503, 'Al Amin Login is not configured for this system.');
 
-        // First, check if the email exists in any table
-        $user = Teacher::where('email', $request->email)->first()
-            ?? Staff::where('email', $request->email)->first()
-            ?? Principal::where('email', $request->email)->first()
-            ?? HrAdministrator::where('email', $request->email)->first();
-
-        if (!$user) {
-            return back()->with('error', 'Email not found');
-        }
-
-        // ==========================================
-        // CHECK IF USER IS RESIGNED/TERMINATED
-        // ==========================================
-        if (isset($user->status) && strtolower($user->status) === 'berhenti') {
-            return back()->with('error', 'Your account has been terminated/resigned. Please contact the administrator for assistance.');
-        }
-
-        if (isset($user->assign_status) && strtolower($user->assign_status) === 'berhenti') {
-            return back()->with('error', 'Your account has been terminated/resigned. Please contact the administrator for assistance.');
-        }
-
-        if (isset($user->is_active) && $user->is_active == 0) {
-            return back()->with('error', 'Your account has been deactivated. Please contact the administrator for assistance.');
-        }
-
-        // Check password
-        if (!Hash::check($request->password, $user->password)) {
-            return back()->with('error', 'Wrong password');
-        }
-
-        // If user is a teacher, check their ASSIGN status as well
-        if (isset($user->role) && strtolower($user->role) === 'teacher') {
-            $teacherStatus = Teacher::join('ASSIGN', 'Teacher.teacherID', '=', 'ASSIGN.teacherID')
-                                   ->where('Teacher.teacherID', $this->getUserId($user))
-                                   ->where('ASSIGN.status', 'Berhenti')
-                                   ->first();
-            
-            if ($teacherStatus) {
-                return back()->with('error', 'Your teacher account has been resigned. Please contact the administrator for assistance.');
-            }
-        }
-
-        // ==========================================
-        // LOGIN SUCCESSFUL - Create Session
-        // ==========================================
-        Session::put('user', $user);
-        Session::put('userID', $this->getUserId($user));
-        Session::put('userName', $this->getUserName($user));
-        Session::put('role', strtolower($user->role));
-        Session::put('email', $user->email); // Add email to session
-        
-        if (isset($user->schoolID)) {
-            Session::put('schoolID', $user->schoolID);
-        }
-
-        // Check if password change is required
-        if (isset($user->password_change_required) && $user->password_change_required == 1) {
-            return redirect()->route('change.password');
-        }
-
-        return $this->redirectByRole($user->role);
+        return redirect()->away($portal);
     }
 
     private function getUserId($user)
@@ -188,9 +126,26 @@ public function changePassword(Request $request)
         };
     }
 
-    public function logout()
+    /**
+     * Destroy ONLY this system's session, then go back to Al Amin Login.
+     * Al Amin Login's own session is left alone so the user can pick another system.
+     */
+    public function logout(Request $request)
     {
-        Session::flush();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return $this->redirectToPortal();
+    }
+
+    private function redirectToPortal()
+    {
+        $portal = (string) config('gateway.portal_url');
+
+        if ($portal !== '' && filter_var($portal, FILTER_VALIDATE_URL)) {
+            return redirect()->away($portal);
+        }
+
         return redirect()->route('login');
     }
 }
